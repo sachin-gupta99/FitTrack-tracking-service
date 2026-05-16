@@ -1,6 +1,6 @@
 package com.fitness.tracking_service.service;
 
-import com.fitness.tracking_service.config.RabbitMQConfig;
+import com.fitness.tracking_service.config.RabbitMQProperties;
 import com.fitness.tracking_service.dto.ActivityRequest;
 import com.fitness.tracking_service.dto.ActivityResponse;
 import com.fitness.tracking_service.exceptions.RecordNotFoundException;
@@ -21,6 +21,7 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final UserValidationService userValidationService;
     private final RabbitTemplate rabbitTemplate;
+    private final RabbitMQProperties rabbitMQProperties;
 
     public ActivityResponse trackActivities(ActivityRequest activityRequest, Integer userId) {
 
@@ -40,10 +41,9 @@ public class ActivityService {
 
         Activity savedActivity = activityRepository.save(activity);
 
-        // Publishing to rabbitMQ can be done here if needed, using a RabbitTemplate or similar mechanism.
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_NAME,
-                RabbitMQConfig.ACTIVITY_ROUTING_KEY,
+                rabbitMQProperties.getExchange().getName(),
+                rabbitMQProperties.getRoutingKey().getActivityRoutingKey(),
                 mapToResponse(savedActivity),
                 message -> {
                     message.getMessageProperties().setHeader("action", "create");
@@ -120,8 +120,8 @@ public class ActivityService {
 
         // Publish update event to RabbitMQ
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_NAME,
-                RabbitMQConfig.ACTIVITY_ROUTING_KEY,
+                rabbitMQProperties.getExchange().getName(),
+                rabbitMQProperties.getRoutingKey().getActivityRoutingKey(),
                 mapToResponse(updatedActivity),
                 message -> {
                     message.getMessageProperties().setHeader("action", "update");
@@ -152,10 +152,10 @@ public class ActivityService {
         // Delete the activity
         activityRepository.delete(existingActivity);
 
-        // Publish delete event to RabbitMQ (optional, depending on your needs)
+        // Publish delete event to RabbitMQ
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_NAME,
-                RabbitMQConfig.ACTIVITY_ROUTING_KEY,
+                rabbitMQProperties.getExchange().getName(),
+                rabbitMQProperties.getRoutingKey().getActivityRoutingKey(),
                 new Activity(activityId),
                 message -> {
                     message.getMessageProperties().setHeader("action", "delete");

@@ -11,9 +11,16 @@ mongodb:
   database: /Fittrack/ai-srvc/mongodb/database
 
 rabbitmq:
-  addresses: /Fittrack/rabbitmq/addresses
-  ssl:
-    enabled: true
+  uri: /Fittrack/rabbitmq/uri
+  queue:
+    activity-queue: activity_queue
+    nutrition-queue: nutrition_queue
+  exchange:
+    name: fitness_exchange
+    type: topic
+  routing-key:
+    activity-routing-key: activity_routing_key
+    nutrition-routing-key: nutrition_routing_key
 
 logging:
   level:

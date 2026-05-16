@@ -1,6 +1,6 @@
 package com.fitness.tracking_service.service;
 
-import com.fitness.tracking_service.config.RabbitMQConfig;
+import com.fitness.tracking_service.config.RabbitMQProperties;
 import com.fitness.tracking_service.dto.NutritionRequest;
 import com.fitness.tracking_service.dto.NutritionResponse;
 import com.fitness.tracking_service.exceptions.RecordNotFoundException;
@@ -21,6 +21,7 @@ public class NutritionService {
     private final NutritionRepository nutritionRepository;
     private final UserValidationService userValidationService;
     private final RabbitTemplate rabbitTemplate;
+    private final RabbitMQProperties rabbitMQProperties;
 
     public NutritionResponse logNutrition(NutritionRequest nutritionRequest, Integer userId) {
 
@@ -46,8 +47,8 @@ public class NutritionService {
 
         // Publishing to RabbitMQ
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_NAME,
-                RabbitMQConfig.NUTRITION_ROUTING_KEY,
+                rabbitMQProperties.getExchange().getName(),
+                rabbitMQProperties.getRoutingKey().getNutritionRoutingKey(),
                 mapToResponse(savedNutrition),
                 message -> {
                     message.getMessageProperties().setHeader("action", "create");
@@ -131,8 +132,8 @@ public class NutritionService {
 
         // Publish update event to RabbitMQ
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_NAME,
-                RabbitMQConfig.NUTRITION_ROUTING_KEY,
+                rabbitMQProperties.getExchange().getName(),
+                rabbitMQProperties.getRoutingKey().getNutritionRoutingKey(),
                 mapToResponse(updatedNutrition),
                 message -> {
                     message.getMessageProperties().setHeader("action", "update");
@@ -165,8 +166,8 @@ public class NutritionService {
 
         // Publish delete event to RabbitMQ
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_NAME,
-                RabbitMQConfig.NUTRITION_ROUTING_KEY,
+                rabbitMQProperties.getExchange().getName(),
+                rabbitMQProperties.getRoutingKey().getNutritionRoutingKey(),
                 new Nutrition(nutritionId),
                 message -> {
                     message.getMessageProperties().setHeader("action", "delete");
