@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.fitness</groupId>
-	<artifactId>activity-service</artifactId>
+	<artifactId>tracking-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>activity-service</name>
-	<description>Demo project for Spring Boot</description>
+	<name>tracking-service</name>
+	<description>FitTrack tracking service</description>
 	<url/>
 	<licenses>
 		<license/>
