@@ -1,6 +1,10 @@
-spring:
+﻿spring:
   application:
-    name: activity-service
+    name: tracking-service
+
+aws:
+  ssm:
+    region: ap-south-1
 
 mongodb:
   uri: /Fittrack/ai-srvc/mongodb/uri
@@ -22,3 +26,4 @@ eureka:
 
 server:
   port: 8072
+

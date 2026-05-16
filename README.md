@@ -121,7 +121,7 @@ Prerequisites: **JDK 21**, a running **MongoDB**, **RabbitMQ**, **Eureka** (`fit
 
 # or build + run jar
 ./mvnw clean package
-java -jar target/activity-service-0.0.1-SNAPSHOT.jar
+java -jar target/tracking-service-0.0.1-SNAPSHOT.jar
 ```
 
 Service starts on **port 8072** and registers itself with Eureka.
@@ -135,8 +135,8 @@ Service starts on **port 8072** and registers itself with Eureka.
 ## Project layout
 
 ```
-src/main/java/com/fitness/activity_service
-├── ActivityServiceApplication.java
+src/main/java/com/fitness/tracking_service
+├── TrackingServiceApplication.java
 ├── aspect/             # request/response logging (AOP)
 ├── config/             # Mongo, AWS SSM, RabbitMQ, WebClient beans
 ├── controllers/        # ActivityController, NutritionController, PingController
