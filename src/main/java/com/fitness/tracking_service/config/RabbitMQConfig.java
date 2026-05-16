@@ -3,8 +3,11 @@ package com.fitness.tracking_service.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fitness.tracking_service.service.ParameterStoreService;
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -12,27 +15,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@RequiredArgsConstructor
 public class RabbitMQConfig {
 
-    public static final String EXCHANGE_NAME = "fitness_exchange";
-    public static final String ACTIVITY_QUEUE = "activity_queue";
-    public static final String NUTRITION_QUEUE = "nutrition_queue";
-    public static final String ACTIVITY_ROUTING_KEY = "activity_routing_key";
-    public static final String NUTRITION_ROUTING_KEY = "nutrition_routing_key";
+    private final RabbitMQProperties rabbitMQProperties;
+    private final ParameterStoreService parameterStoreService;
 
     @Bean
     public TopicExchange fitnessExchange() {
-        return new TopicExchange(EXCHANGE_NAME);
+        return new TopicExchange(rabbitMQProperties.getExchange().getName());
     }
 
     @Bean
     public Queue activityQueue() {
-        return new Queue(ACTIVITY_QUEUE, true);
+        return new Queue(rabbitMQProperties.getQueue().getActivityQueue(), true);
     }
 
     @Bean
     public Queue nutritionQueue() {
-        return new Queue(NUTRITION_QUEUE, true);
+        return new Queue(rabbitMQProperties.getQueue().getNutritionQueue(), true);
     }
 
     @Bean
@@ -41,6 +42,16 @@ public class RabbitMQConfig {
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return mapper;
+    }
+
+    @Bean
+    public ConnectionFactory connectionFactory() throws Exception {
+        String uri = parameterStoreService
+                .getParameterValue(rabbitMQProperties.getUri());
+
+        CachingConnectionFactory cf = new CachingConnectionFactory();
+        cf.setUri(uri);
+        return cf;
     }
 
     @Bean
@@ -77,7 +88,7 @@ public class RabbitMQConfig {
         return BindingBuilder
                 .bind(activityQueue)
                 .to(fitnessExchange)
-                .with(ACTIVITY_ROUTING_KEY);
+                .with(rabbitMQProperties.getRoutingKey().getActivityRoutingKey());
     }
 
     @Bean(name = "nutritionBinding")
@@ -85,6 +96,6 @@ public class RabbitMQConfig {
         return BindingBuilder
                 .bind(nutritionQueue)
                 .to(fitnessExchange)
-                .with(NUTRITION_ROUTING_KEY);
+                .with(rabbitMQProperties.getRoutingKey().getNutritionRoutingKey());
     }
 }
