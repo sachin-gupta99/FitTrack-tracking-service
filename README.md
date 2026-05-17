@@ -90,7 +90,7 @@ mongodb:
   database: /Fittrack/ai-srvc/mongodb/database
 
 rabbitmq:
-  addresses: /Fittrack/rabbitmq/addresses
+  uri: /Fittrack/rabbitmq/uri
 
 eureka:
   client:
@@ -108,7 +108,7 @@ Required at runtime:
 | AWS region | `aws.ssm.region` property (env var `AWS_SSM_REGION` or JVM arg) |
 | AWS credentials | `DefaultCredentialsProvider` chain (env, profile, instance role) |
 | Mongo URI / database | SSM parameters listed above |
-| RabbitMQ addresses | SSM parameter listed above |
+| RabbitMQ URI | SSM parameter `/Fittrack/rabbitmq/uri` (single URI; TLS auto-enabled for `amqps://`) |
 | Eureka registry | `http://localhost:8761/eureka/` by default |
 
 ## Running locally

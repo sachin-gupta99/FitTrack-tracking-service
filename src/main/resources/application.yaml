@@ -7,8 +7,8 @@ aws:
     region: ap-south-1
 
 mongodb:
-  uri: /Fittrack/ai-srvc/mongodb/uri
-  database: /Fittrack/ai-srvc/mongodb/database
+  uri: /Fittrack/mongodb/uri
+  database: /Fittrack/mongodb/database
 
 rabbitmq:
   uri: /Fittrack/rabbitmq/uri
